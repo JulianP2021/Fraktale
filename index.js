@@ -35,7 +35,7 @@ let seepferdchen = {
 };
 //TODO
 let sternhaufen = {
-	kantenlänge: 0.5,
+	kantenlänge: 2,
 	xM: 0,
 	yM: 0,
 	startX: -0.221346489,
@@ -45,52 +45,51 @@ let sternhaufen = {
 	formel: "",
 };
 
-let ausgewählt = mandelbrot;
-
-let kantenlängeinput = document.getElementById("kantenlängeSlider");
-kantenlängeinput.addEventListener("input", ev => {
-	ausgewählt.kantenlänge = kantenlängeinput.value;
-});
-let xMinput = document.getElementById("xMSlider");
-xMinput.addEventListener("input", ev => {
-	ausgewählt.xM = xMinput.value;
-});
-let yMinput = document.getElementById("yMSlider");
-yMinput.addEventListener("input", ev => {
-	ausgewählt.yM = yMinput.value;
-});
-let anzahlIterationeninput = document.getElementById(
-	"anzahlItterationenSlider"
-);
-anzahlIterationeninput.addEventListener("input", ev => {
-	ausgewählt.anzahlIterationen = anzahlIterationeninput.value;
-});
-let aKinput = document.getElementById("aKSlider");
-aKinput.addEventListener("input", ev => {
-	ausgewählt.aK = aKinput.value;
+let kantenlängeinput = document.getElementById("kantenlängeinput");
+let xMinput = document.getElementById("xMinput");
+let yMinput = document.getElementById("yMinput");
+let anzahlIterationeninput = document.getElementById("anzahlItterationeninput");
+let aKinput = document.getElementById("aKinput");
+let fraktalinput = document.getElementById("fraktalinput");
+fraktalinput.addEventListener("input", ev => {
+	if (fraktalinput.value == "Mandelbrot") {
+		ausgewählt = mandelbrot;
+	}
+	if (fraktalinput.value == "Seepferdchen") {
+		ausgewählt = seepferdchen;
+	}
+	kantenlängeinput.value = ausgewählt.kantenlänge;
+	xMinput.value = ausgewählt.xM;
+	yMinput.value = ausgewählt.yM;
+	anzahlIterationeninput.value = ausgewählt.anzahlIterationen;
+	aKinput.value = ausgewählt.aK;
 });
 
 let drawbtn = document.getElementById("draw");
 drawbtn.addEventListener("click", ev => {
+	if (fraktalinput.value == "Mandelbrot") {
+		ausgewählt = mandelbrot;
+	}
+	if (fraktalinput.value == "Seepferdchen") {
+		ausgewählt = seepferdchen;
+	}
+	ausgewählt.kantenlänge = kantenlängeinput.value;
+	ausgewählt.xM = xMinput.value;
+	ausgewählt.yM = yMinput.value;
+	ausgewählt.anzahlIterationen = anzahlIterationeninput.value;
+	ausgewählt.aK = aKinput.value;
 	draw();
 });
 
+let ausgewählt = seepferdchen;
+kantenlängeinput.value = ausgewählt.kantenlänge;
+xMinput.value = ausgewählt.xM;
+yMinput.value = ausgewählt.yM;
+anzahlIterationeninput.value = ausgewählt.anzahlIterationen;
+aKinput.value = ausgewählt.aK;
+
+console.log(Math.tanh(90 * Math.PI));
 resizeCanvas();
-
-/*r = 0;
-i = 0;
-rC = 2;
-iC = 0;
-
-for (let k = 0; k < 10; k++) {
-	let r2 = r * r - i * i;
-	let i2 = -2 * r * i;
-	r = r2;
-	i = i2;
-	r = r + rC;
-	i = i + iC;
-	console.log(i, r);
-}*/
 
 console.log("ready");
 
@@ -156,12 +155,13 @@ function iterationBerechnen(r, i, codeAsString) {
 		r = r + rC;
 		i = i + iC;
 	} else if (ausgewählt == sternhaufen) {
-		r2 = Math.tan(i / r) * r;
-		i2 = Math.tan(i / r) * i;
-		r = r2;
-		i = i2;
-		r = r - iC;
-		i = i + rC;
+		const e_2iz = Math.exp(2 * i * r);
+		const resultReal = r * (e_2iz - 1) / (e_2iz + 1);
+		const resultImg = i * (e_2iz - 1) / (e_2iz + 1);
+		r = resultReal;
+		i = resultImg;
+		r = r + rC;
+		i = i + iC;
 	} else if (codeAsString != "") {
 		eval(codeAsString);
 	}

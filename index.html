@@ -16,43 +16,39 @@
 		<h1>Fraktale</h1>
 
 		<div class="slidecontainer">
+			Fraktaltyp:
+			<input
+				list="Fraktale"
+				type="text"
+				id="fraktalinput"
+				placeholder="Mandelbrot"
+				required="required" />
+			<datalist id="Fraktale">
+				<option value="Mandelbrot"></option>
+				<option value="Seepferdchen"></option>
+			</datalist>
 			Kantenlänge:
 			<input
 				type="number"
 				min="-10"
 				max="10"
 				value="0"
-				id="kantenlängeSlider" />
+				id="kantenlängeinput" />
 
 			xM:
-			<input
-				type="number"
-				min="-10"
-				max="10"
-				value="0"
-				id="xMSlider" />
+			<input type="number" min="-10" max="10" value="0" id="xMinput" />
 			yM:
-			<input
-				type="number"
-				min="-10"
-				max="10"
-				value="0"
-				id="yMSlider" />
+			<input type="number" min="-10" max="10" value="0" id="yMinput" />
 			Iterationen:
 			<input
 				type="number"
 				min="0"
 				max="1000"
 				value="0"
-				id="anzahlItterationenSlider" />
+				id="anzahlItterationeninput" />
 			Abbruchkriterium:
-			<input
-				type="number"
-				min="0"
-				max="10"
-				value="0"
-				id="aKSlider" />
-			<button id = draw>Draw</button>
+			<input type="number" min="0" max="10" value="0" id="aKinput" />
+			<button id="draw">Draw</button>
 		</div>
 		<canvas id="canvas"></canvas>
 		<script src="index.js"></script>
