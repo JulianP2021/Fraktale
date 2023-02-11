@@ -155,8 +155,6 @@ function iterationBerechnen(r, i, codeAsString) {
 		i = i2;
 		r = r + rC;
 		i = i + iC;
-	} else if (codeAsString != "") {
-		eval(codeAsString);
 	} else if (ausgewählt == sternhaufen) {
 		r2 = Math.tan(i / r) * r;
 		i2 = Math.tan(i / r) * i;
@@ -164,6 +162,8 @@ function iterationBerechnen(r, i, codeAsString) {
 		i = i2;
 		r = r - iC;
 		i = i + rC;
+	} else if (codeAsString != "") {
+		eval(codeAsString);
 	}
 	return { r: r, i: i };
 }
