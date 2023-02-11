@@ -16,12 +16,43 @@
 		<h1>Fraktale</h1>
 
 		<div class="slidecontainer">
+			Knatenlänge:
 			<input
 				type="number"
 				min="-10"
 				max="10"
 				value="0"
-				id="myRange" />
+				id="kantenlängeSlider" />
+
+			xM:
+			<input
+				type="number"
+				min="-10"
+				max="10"
+				value="0"
+				id="xMSlider" />
+			yM:
+			<input
+				type="number"
+				min="-10"
+				max="10"
+				value="0"
+				id="yMSlider" />
+			Anzahl  der Itterationen:
+			<input
+				type="number"
+				min="0"
+				max="1000"
+				value="0"
+				id="anzahlItterationenSlider" />
+			Abbruchskriterium:
+			<input
+				type="number"
+				min="0"
+				max="10"
+				value="0"
+				id="aKSlider" />
+			<button id = draw>Draw</button>
 		</div>
 		<canvas id="canvas"></canvas>
 		<script src="index.js"></script>
