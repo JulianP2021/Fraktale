@@ -21,6 +21,7 @@ let mandelbrot = {
 	startY: 0,
 	anzahlIterationen: 20,
 	aK: 5,
+	type: "Mandelbrot-Set",
 	formel: "",
 };
 let seepferdchen = {
@@ -31,6 +32,7 @@ let seepferdchen = {
 	startY: 0,
 	anzahlIterationen: 400,
 	aK: 10,
+	type: "Mandelbrot-Set",
 	formel: "",
 };
 let apfelmännchen = {
@@ -41,9 +43,10 @@ let apfelmännchen = {
 	startY: 0,
 	anzahlIterationen: 1131,
 	aK: 100,
+	type: "Mandelbrot-Set",
 	formel: "",
 };
-//TODO
+
 let sternhaufen = {
 	kantenlänge: 0.5,
 	xM: 0,
@@ -52,6 +55,7 @@ let sternhaufen = {
 	startY: 1.464902383,
 	anzahlIterationen: 100,
 	aK: 100,
+	type: "Julia-Menge",
 	formel: "",
 };
 let blueMoon = {
@@ -62,8 +66,22 @@ let blueMoon = {
 	startY: 0,
 	anzahlIterationen: 100,
 	aK: 10,
+	type: "Mandelbrot-Set",
 	formel: "",
 };
+
+let plasmakugel = {
+	kantenlänge: 0.000912495,
+	xM: 0.073347907,
+	yM: 0.045859537,
+	startX: 0,
+	startY: 0,
+	anzahlIterationen: 100,
+	aK: 60,
+	type: "Newton-Fraktal",
+	formel: "",
+};
+
 let schleife = {
 	kantenlänge: 2.24,
 	xM: 7.848,
@@ -71,7 +89,9 @@ let schleife = {
 	startX: 0,
 	startY: 0,
 	anzahlIterationen: 50,
-	aK: 100000000,
+	//TODO
+	aK: 10,
+	type: "Newton-Fraktal",
 	formel: "",
 };
 
@@ -100,6 +120,9 @@ fraktalinput.addEventListener("input", ev => {
 	if (fraktalinput.value == "Blauer Mond") {
 		ausgewählt = blueMoon;
 	}
+	if (fraktalinput.value == "Plasmakugel") {
+		ausgewählt = plasmakugel;
+	}
 	kantenlängeinput.value = ausgewählt.kantenlänge;
 	xMinput.value = ausgewählt.xM;
 	yMinput.value = ausgewählt.yM;
@@ -127,6 +150,9 @@ drawbtn.addEventListener("click", ev => {
 	if (fraktalinput.value == "Blauer Mond") {
 		ausgewählt = blueMoon;
 	}
+	if (fraktalinput.value == "Plasmakugel") {
+		ausgewählt = plasmakugel;
+	}
 	ausgewählt.kantenlänge = kantenlängeinput.value;
 	ausgewählt.xM = xMinput.value;
 	ausgewählt.yM = yMinput.value;
@@ -142,7 +168,7 @@ yMinput.value = ausgewählt.yM;
 anzahlIterationeninput.value = ausgewählt.anzahlIterationen;
 aKinput.value = ausgewählt.aK;
 
-resizeCanvas();
+//resizeCanvas();
 
 console.log("ready");
 
@@ -151,18 +177,22 @@ function draw(codeAsString) {
 		for (let j = 0; j < canvas.height; j++) {
 			ctx.fillStyle = "white";
 			let iteration = 0;
-			rC =
-				ausgewählt.xM -
-				ausgewählt.kantenlänge * 0.5 +
-				(ausgewählt.kantenlänge / canvas.width) * k +
-				ausgewählt.startX;
-			iC =
-				ausgewählt.yM -
-				ausgewählt.kantenlänge * 0.5 +
-				(ausgewählt.kantenlänge / canvas.height) * j +
-				ausgewählt.startX;
-			r = 0;
-			i = 0;
+			if (ausgewählt.type == "Mandelbrot-Set") {
+				rC = getPixelCoordinate(k, j).r;
+				iC = getPixelCoordinate(k, j).i;
+				r = 0;
+				i = 0;
+			} else if (ausgewählt.type == "Julia-Menge") {
+				rC = ausgewählt.startX;
+				iC = ausgewählt.startY;
+				r = getPixelCoordinate(k, j).r;
+				i = getPixelCoordinate(k, j).i;
+			} else if (ausgewählt.type == "Newton-Fraktal") {
+				rC = 0;
+				iC = 0;
+				r = getPixelCoordinate(k, j).r;
+				i = getPixelCoordinate(k, j).i;
+			}
 			while (
 				iteration < ausgewählt.anzahlIterationen &&
 				Math.sqrt(r * r + i * i) < ausgewählt.aK
@@ -197,132 +227,134 @@ function draw(codeAsString) {
 	console.log("Fertig gezeichnet");
 }
 
-function iterationBerechnen(r, i, codeAsString, iteration) {
+function iterationBerechnen(r, i, codeAsString) {
 	if (ausgewählt == seepferdchen) {
-		let r2 = r * r - i * i;
-		let i2 = 2 * r * i;
+		let ergebniss = potenzieren(r, i, 2);
+		let r2 = ergebniss.r;
+		let i2 = ergebniss.i;
 		r = r2;
 		i = i2;
 		r = r - iC;
 		i = i + rC;
 	} else if (ausgewählt == apfelmännchen) {
-		let r2 = r * r - i * i;
-		let i2 = 2 * r * i;
+		let ergebniss = potenzieren(r, i, 2);
+		let r2 = ergebniss.r;
+		let i2 = ergebniss.i;
 		r = r2;
 		i = i2;
 		r = r - iC;
 		i = i + rC;
 	} else if (ausgewählt == mandelbrot) {
-		let r2 = r * r - i * i;
-		let i2 = 2 * r * i;
+		let ergebniss = potenzieren(r, i, 2);
+		let r2 = ergebniss.r;
+		let i2 = ergebniss.i;
 		r = r2;
 		i = i2;
 		r = r + rC;
 		i = i + iC;
 	} else if (ausgewählt == schleife) {
-		if (iteration == 0) {
-			r = rC;
-			i = iC;
-		}
-		//Potenzieren von komplexen Zahlen https://www.youtube.com/watch?v=rXM9GXxa-cU
-		let phi = 0;
-		if (!isNaN(Math.acos(r / Math.sqrt(r * r + i * i)))) {
-			phi = Math.acos(r / Math.sqrt(r * r + i * i));
-		}
-		const z_5_r = Math.pow(r, 5) * Math.cos(5 * phi);
-		const z_5_i = Math.pow(r, 5) * Math.sin(5 * phi);
-		const z_4_r = Math.pow(r, 4) * Math.cos(4 * phi);
-		const z_4_i = Math.pow(r, 4) * Math.sin(4 * phi);
+		const z_5_r = potenzieren(r, i, 5).r;
+		const z_5_i = potenzieren(r, i, 5).i;
+		const z_4_r = potenzieren(r, i, 4).r;
+		const z_4_i = potenzieren(r, i, 4).i;
 		//dividieren von komplexen Zahlen https://www.mathebibel.de/komplexe-zahlen-dividieren
-		let nenner_R = z_5_r - 2 * r - 1 + z_5_i * i;
-		let zähler_R = 5 * z_4_r - 2;
-		let nenner_I = z_5_i - 2 * i + z_5_i * r;
-		let zähler_I = 5 * z_4_i - 2;
-		r =
-			r -
-			(nenner_R * zähler_R + nenner_I * -zähler_I) /
-				(nenner_R * nenner_R - nenner_I * nenner_I);
-		i =
-			i -
-			(nenner_R * -zähler_I + nenner_I * zähler_R) /
-				(nenner_R * nenner_R - nenner_I * nenner_I);
-		console.log(
+		let zähler_R = z_5_r - 2 * r - 1;
+		let zähler_I = z_5_i - 2 * i;
+		let nenner_R = 5 * z_4_r - 2;
+		let nenner_I = 5 * z_4_i;
+		r = r - teilen(zähler_R, zähler_I, nenner_R, nenner_I).r;
+		i = i - teilen(zähler_R, zähler_I, nenner_R, nenner_I).i;
+	} else if (ausgewählt == sternhaufen) {
+		//tangens bestimmen https://www.redcrab-software.com/de/Rechner/Komplex/Tan
+		let tan_R = Math.sin(2 * r) / (Math.cos(2 * r) + Math.cosh(2 * i));
+		let tan_I = Math.sin(2 * i) / (Math.cos(2 * r) + Math.cosh(2 * i));
+		r = r * tan_R - iC;
+		i = i * tan_I + rC;
+	} else if (ausgewählt == blueMoon) {
+		//phi bestimmen http://www.math-grain.de/download/m1/komplex/potenzieren-1.pdf S.12
+		let zminusC_3_r = potenzieren(r - rC, i - iC, 3).r;
+		let zminusC_3_i = potenzieren(r - rC, i - iC, 3).i;
+		let zminusiMalc_2_r = potenzieren(r + iC, i - rC, 2).r;
+		let zminusiMalc_2_i = potenzieren(r + iC, i - rC, 2).i;
+		//dividieren von komplexen Zahlen https://www.mathebibel.de/komplexe-zahlen-dividieren
+		let zähler_R = zminusC_3_r - 2 * (r - rC);
+		let zähler_I = zminusC_3_i - 2 * (i - iC) - 4;
+		let nenner_R = 3 * zminusiMalc_2_r;
+		let nenner_I = 3 * zminusiMalc_2_i - 2;
+		r = r - rC - teilen(zähler_R, zähler_I, nenner_R, nenner_I).r;
+		i = i - iC - teilen(zähler_R, zähler_I, nenner_R, nenner_I).i;
+		/*console.log(
 			"i: ",
 			i,
 			"r: ",
 			r,
-			"phi: ",
-			phi,
 			"zhoch5r: ",
-			z_5_r,
+			zminusC_3_r,
 			"zhoch5i: ",
-			z_5_i,
-			z_4_r,
-			z_4_i
-		);
-	} else if (ausgewählt == sternhaufen) {
-		let phi = 0;
-		if (!isNaN(Math.acos(r / Math.sqrt(r * r + i * i)))) {
-			phi = Math.acos(r / Math.sqrt(r * r + i * i));
-		}
-		r = r * Math.tan(phi);
-		i = i * Math.tan(phi);
-		r = r - iC;
-		i = i + rC;
-	} else if (ausgewählt == blueMoon) {
-		//@TODO
-		let zminusC_3_r =
-			Math.pow(r, 3) *
-			Math.cos(
-				3 *
-					Math.acos(
-						(r - rC) / Math.sqrt((r - rC) * (r - rC) + (i - iC) * (i - iC))
-					)
-			);
-		let zminusC_3_i =
-			Math.pow(r, 3) *
-			Math.sin(
-				3 *
-					Math.acos(
-						(r - rC) / Math.sqrt((r - rC) * (r - rC) + (i - iC) * (i - iC))
-					)
-			);
-		let zminusiMalc_2_r =
-			Math.pow(r, 2) *
-			Math.cos(
-				2 *
-					Math.acos(
-						(r + iC) / Math.sqrt((r + iC) * (r + iC) + (i - rC) * (i - rC))
-					)
-			);
-		let zminusiMalc_2_i =
-			Math.pow(r, 2) *
-			Math.sin(
-				2 *
-					Math.acos(
-						(r + iC) / Math.sqrt((r + iC) * (r + iC) + (i - rC) * (i - rC))
-					)
-			);
-		//dividieren von komplexen Zahlen https://www.mathebibel.de/komplexe-zahlen-dividieren
-		let nenner_R = zminusC_3_r - 2 * (r - rC);
-		let zähler_R = 3 * zminusiMalc_2_r;
-		let nenner_I = zminusC_3_i - 2 * (i - iC) - 4;
-		let zähler_I = 3 * zminusiMalc_2_i;
-		r =
-			r -
-			rC -
-			(nenner_R * zähler_R + nenner_I * -zähler_I) /
-				(nenner_R * nenner_R - nenner_I * nenner_I);
-		i =
-			i -
-			iC -
-			(nenner_R * -zähler_I + nenner_I * zähler_R) /
-				(nenner_R * nenner_R - nenner_I * nenner_I);
-		//console.log("i: ",i,"r: ", r, "zhoch5r: ",zminusC_3_r, "zhoch5i: ",zminusC_3_i, zminusiMalc_2_r, zminusiMalc_2_i);
+			zminusC_3_i,
+			zminusiMalc_2_r,
+			zminusiMalc_2_i
+		);*/
 	} else if (codeAsString != "") {
 		eval(codeAsString);
 	}
 	return { r: r, i: i };
 }
 
+function phiermitteln(r, i) {
+	if (zBetrag(r, i) != 0) {
+		if (r > 0) {
+			return Math.asin(i / zBetrag(r, i));
+		} else {
+			return Math.PI - Math.asin(i / zBetrag(r, i));
+		}
+	} else {
+		return 0;
+	}
+}
+
+function potenzieren(r1, i1, n) {
+	let phi = phiermitteln(r1, i1);
+	/*if(Math.pow(zBetrag(r1, i1), n) * Math.cos(n * phi)!=multiplizieren(r1,i1,r1,i1).r || Math.pow(zBetrag(r1, i1), n) * Math.sin(n * phi) != multiplizieren(r1,i1,r1,i1).i){
+		console.log( Math.pow(zBetrag(r1, i1), n) * Math.cos(n * phi),Math.pow(zBetrag(r1, i1), n) * Math.sin(n * phi),multiplizieren(r1,i1,r1,i1),r1,i1, phi, Math.PI/2);
+	}*/
+	return {
+		r: Math.pow(zBetrag(r1, i1), n) * Math.cos(n * phi),
+		i: Math.pow(zBetrag(r1, i1), n) * Math.sin(n * phi),
+	};
+}
+
+function teilen(nenner_R, nenner_I, zähler_R, zähler_I) {
+	return {
+		r:
+			(nenner_R * zähler_R + nenner_I * zähler_I) /
+			(zähler_R * zähler_R + zähler_I * zähler_I),
+		i:
+			(nenner_R * -zähler_I + nenner_I * zähler_R) /
+			(zähler_R * zähler_R + zähler_I * zähler_I),
+	};
+}
+
+function zBetrag(r, i) {
+	return Math.sqrt(Math.pow(r, 2) + Math.pow(i, 2));
+}
+
+function getPixelCoordinate(k, j) {
+	return {
+		r:
+			ausgewählt.xM -
+			ausgewählt.kantenlänge * 0.5 +
+			(ausgewählt.kantenlänge / canvas.width) * k,
+		i:
+			ausgewählt.yM -
+			ausgewählt.kantenlänge * 0.5 +
+			(ausgewählt.kantenlänge / canvas.height) * j,
+	};
+}
+
+function multiplizieren(r1, i1, r2, i2) {
+	return { r: r1 * r2 - i1 * i2, i: r1 * i2 + i1 * r2 };
+}
+
+console.log(teilen(2, 3, 1, -4));
 draw();
