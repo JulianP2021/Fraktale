@@ -19,7 +19,7 @@ let mandelbrot = {
 	yM: 0,
 	startX: 0,
 	startY: 0,
-	anzahlIterationen: 20,
+	anzahlIterationen: 100,
 	aK: 5,
 	type: "Mandelbrot-Set",
 	formel: "",
@@ -161,7 +161,7 @@ drawbtn.addEventListener("click", ev => {
 	draw();
 });
 
-let ausgewählt = mandelbrot;
+let ausgewählt = plasmakugel;
 kantenlängeinput.value = ausgewählt.kantenlänge;
 xMinput.value = ausgewählt.xM;
 yMinput.value = ausgewählt.yM;
@@ -175,7 +175,7 @@ console.log("ready");
 function draw(codeAsString) {
 	for (let k = 0; k < canvas.width; k++) {
 		for (let j = 0; j < canvas.height; j++) {
-			ctx.fillStyle = "white";
+			ctx.fillStyle = "black";
 			let iteration = 0;
 			if (ausgewählt.type == "Mandelbrot-Set") {
 				rC = getPixelCoordinate(k, j).r;
@@ -197,23 +197,42 @@ function draw(codeAsString) {
 				iteration < ausgewählt.anzahlIterationen &&
 				Math.sqrt(r * r + i * i) < ausgewählt.aK
 			) {
-				let iterationsberechnung = iterationBerechnen(
-					r,
-					i,
-					codeAsString,
-					iteration
-				);
+				let iterationsberechnung = iterationBerechnen(r, i, codeAsString);
 				r = iterationsberechnung.r;
 				i = iterationsberechnung.i;
 				iteration++;
 			}
-			if (iteration == ausgewählt.anzahlIterationen) {
+
+			let colorvalue = Math.floor(
+				(iteration / ausgewählt.anzahlIterationen) * 100
+			);
+			if (colorvalue < 1) {
+				ctx.fillStyle = "black";
+			}
+			if (colorvalue < 3) {
+				ctx.fillStyle = "orange";
+			}else if (colorvalue < 5) {
+				ctx.fillStyle = "yellow";
+			}else if (colorvalue < 10) {
+				ctx.fillStyle = "lightgreen";
+			} else if (colorvalue < 20) {
+				ctx.fillStyle = "green";
+			}else if (colorvalue < 30) {
+				ctx.fillStyle = "cyan";
+			}else if (colorvalue < 40) {
+				ctx.fillStyle = "blue";
+			}else if (colorvalue < 50) {
+				ctx.fillStyle = "ulramarine";
+			}else if (colorvalue < 60) {
+				ctx.fillStyle = "purple";
+			}else if (colorvalue < 70) {
+				ctx.fillStyle = "red";
+			}else if (colorvalue < 80) {
+				ctx.fillStyle = "fire";
+			}else if (colorvalue < 90) {
+				ctx.fillStyle = "black";
+			}else if (colorvalue >= 90) {
 				ctx.fillStyle = "white";
-			} else {
-				let colorvalue = Math.floor(
-					(iteration / ausgewählt.anzahlIterationen) * 255
-				);
-				ctx.fillStyle = "rgb(" + colorvalue + "," + 0 + "," + 0 + ")";
 			}
 
 			ctx.fillRect(
@@ -257,7 +276,6 @@ function iterationBerechnen(r, i, codeAsString) {
 		const z_5_i = potenzieren(r, i, 5).i;
 		const z_4_r = potenzieren(r, i, 4).r;
 		const z_4_i = potenzieren(r, i, 4).i;
-		//dividieren von komplexen Zahlen https://www.mathebibel.de/komplexe-zahlen-dividieren
 		let zähler_R = z_5_r - 2 * r - 1;
 		let zähler_I = z_5_i - 2 * i;
 		let nenner_R = 5 * z_4_r - 2;
@@ -271,30 +289,27 @@ function iterationBerechnen(r, i, codeAsString) {
 		r = r * tan_R - iC;
 		i = i * tan_I + rC;
 	} else if (ausgewählt == blueMoon) {
-		//phi bestimmen http://www.math-grain.de/download/m1/komplex/potenzieren-1.pdf S.12
 		let zminusC_3_r = potenzieren(r - rC, i - iC, 3).r;
 		let zminusC_3_i = potenzieren(r - rC, i - iC, 3).i;
 		let zminusiMalc_2_r = potenzieren(r + iC, i - rC, 2).r;
 		let zminusiMalc_2_i = potenzieren(r + iC, i - rC, 2).i;
-		//dividieren von komplexen Zahlen https://www.mathebibel.de/komplexe-zahlen-dividieren
 		let zähler_R = zminusC_3_r - 2 * (r - rC);
 		let zähler_I = zminusC_3_i - 2 * (i - iC) - 4;
 		let nenner_R = 3 * zminusiMalc_2_r;
 		let nenner_I = 3 * zminusiMalc_2_i - 2;
 		r = r - rC - teilen(zähler_R, zähler_I, nenner_R, nenner_I).r;
 		i = i - iC - teilen(zähler_R, zähler_I, nenner_R, nenner_I).i;
-		/*console.log(
-			"i: ",
-			i,
-			"r: ",
-			r,
-			"zhoch5r: ",
-			zminusC_3_r,
-			"zhoch5i: ",
-			zminusC_3_i,
-			zminusiMalc_2_r,
-			zminusiMalc_2_i
-		);*/
+	} else if (ausgewählt == plasmakugel) {
+		let zminusiMalc_3_r = potenzieren(r + iC, i - rC, 3).r;
+		let zminusiMalc_3_i = potenzieren(r + iC, i - rC, 3).i;
+		let zminusiMalc_2_r = potenzieren(r + iC, i - rC, 2).r;
+		let zminusiMalc_2_i = potenzieren(r + iC, i - rC, 2).i;
+		let zähler_R = zminusiMalc_3_r - (r + iC) - 3;
+		let zähler_I = zminusiMalc_3_i - (i - rC);
+		let nenner_R = 3 * zminusiMalc_2_r - 1;
+		let nenner_I = 3 * zminusiMalc_2_i;
+		r = r + iC - teilen(zähler_R, zähler_I, nenner_R, nenner_I).r;
+		i = i - rC - teilen(zähler_R, zähler_I, nenner_R, nenner_I).i;
 	} else if (codeAsString != "") {
 		eval(codeAsString);
 	}
@@ -302,6 +317,7 @@ function iterationBerechnen(r, i, codeAsString) {
 }
 
 function phiermitteln(r, i) {
+	//phi bestimmen http://www.math-grain.de/download/m1/komplex/potenzieren-1.pdf S.12
 	if (zBetrag(r, i) != 0) {
 		if (r > 0) {
 			return Math.asin(i / zBetrag(r, i));
@@ -315,9 +331,6 @@ function phiermitteln(r, i) {
 
 function potenzieren(r1, i1, n) {
 	let phi = phiermitteln(r1, i1);
-	/*if(Math.pow(zBetrag(r1, i1), n) * Math.cos(n * phi)!=multiplizieren(r1,i1,r1,i1).r || Math.pow(zBetrag(r1, i1), n) * Math.sin(n * phi) != multiplizieren(r1,i1,r1,i1).i){
-		console.log( Math.pow(zBetrag(r1, i1), n) * Math.cos(n * phi),Math.pow(zBetrag(r1, i1), n) * Math.sin(n * phi),multiplizieren(r1,i1,r1,i1),r1,i1, phi, Math.PI/2);
-	}*/
 	return {
 		r: Math.pow(zBetrag(r1, i1), n) * Math.cos(n * phi),
 		i: Math.pow(zBetrag(r1, i1), n) * Math.sin(n * phi),
@@ -325,6 +338,7 @@ function potenzieren(r1, i1, n) {
 }
 
 function teilen(nenner_R, nenner_I, zähler_R, zähler_I) {
+	//dividieren von komplexen Zahlen https://www.mathebibel.de/komplexe-zahlen-dividieren
 	return {
 		r:
 			(nenner_R * zähler_R + nenner_I * zähler_I) /
@@ -356,5 +370,4 @@ function multiplizieren(r1, i1, r2, i2) {
 	return { r: r1 * r2 - i1 * i2, i: r1 * i2 + i1 * r2 };
 }
 
-console.log(teilen(2, 3, 1, -4));
 draw();
